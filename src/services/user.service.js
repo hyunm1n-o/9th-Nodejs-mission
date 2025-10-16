@@ -1,4 +1,5 @@
 import { responseFromUser } from "../dtos/user.dto.js";
+import bcrypt from "bcrypt";
 import {
   addUser,
   getUser,
@@ -13,6 +14,10 @@ import {
 
 // 회원가입
 export const userSignUp = async (data) => {
+  // 비밀번호 해싱
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
   const joinUserId = await addUser({
     email: data.email,
     name: data.name,
@@ -21,6 +26,7 @@ export const userSignUp = async (data) => {
     address: data.address,
     detailAddress: data.detailAddress,
     phoneNumber: data.phoneNumber,
+    password: hashedPassword,
   });
 
   if (joinUserId === null) {
