@@ -1,25 +1,46 @@
-import { pool } from "../db.config.js";
+import { prisma } from "../db.config.js";
 
 // 가게 정보 불러오기
 export const getStore = async (storeId) => {
-  const conn = await pool.getConnection();
+   const store = await prisma.store.findUnique({
+      where: { id: storeId },
+    });
 
-  try {
-    const [store] = await pool.query(`SELECT * FROM store WHERE id = ?;`, storeId);
-
-    console.log(store);
-
-     if (store.length == 0) {
-      return null;
-    }
-
-    return store;
-  } catch (err) {
-    throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
-    );
-  } finally {
-    conn.release();
-  }
+    return store || null; // 없으면 null 리턴
 };
 
+
+export const getAllStoreReviews = async (storeId) => {
+  const reviews = await prisma.userStoreReview.findMany({
+    select: {
+      id: true,
+      content: true,
+      storeId: true,
+      userId: true,
+      store: true,
+      user: true,
+    },
+    where: { storeId: storeId, id: { gt: cursor } },
+    orderBy: { id: "asc" },
+    take: 5,
+  });
+
+  return reviews;
+};
+
+// 특정 가게의 미션 목록 불러오기
+export const getAllStoreMission = async (storeId) => {
+  const storeMissions = await prisma.mission.findMany({
+      select: {
+      id: true,
+      storeId: true,
+      reward: true,
+      deadline: true,
+      missionSpec: true,
+    },
+      where: { id: storeId },
+      orderBy: { id: "asc" }
+    });
+
+    return storeMissions || null; // 없으면 null 리턴
+};

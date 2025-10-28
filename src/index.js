@@ -5,10 +5,10 @@
 import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
-import { handleUserSignUp } from "./controllers/user.controller.js"; 
-import  { handleCreateMission, handleCreateUserMission} from "./controllers/mission.controller.js"; 
-import { handleCreateReview } from "./controllers/review.controller.js"; 
-import { handleListStoreReviews } from "./controllers/store.controller.js"
+import { handleUserSignUp, handleListUserMissionsInProgress, handleCompleteUserMission } from "./controllers/user.controller.js"; 
+import  { addMission, assignUserMission} from "./controllers/mission.controller.js"; 
+import { addReview } from "./controllers/review.controller.js"; 
+import { handleListStoreReviews, handleListStoreMissions } from "./controllers/store.controller.js"
 
 dotenv.config();
 
@@ -25,12 +25,16 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/v1/users/signup", handleUserSignUp);
-app.post("/api/v1/stores/:storeId/reviews", handleCreateReview);
-app.post("/api/v1/stores/:storeId/missions", handleCreateMission);
-app.post("/api/v1/missions/:missionId/users/:userId", handleCreateUserMission);
+app.post("/api/v1/stores/:storeId/reviews", addReview);
+app.post("/api/v1/stores/:storeId/missions", addMission);
+app.post("/api/v1/missions/:missionId/users/:userId", assignUserMission);
 
 app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);
+app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions)
+app.get("/api/v1/users/:userId/missions/inprogress", handleListUserMissionsInProgress)
 
+app.patch("/api/v1/users/:userId/missions/:missionId/complete", handleCompleteUserMission)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+

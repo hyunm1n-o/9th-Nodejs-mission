@@ -42,3 +42,31 @@ export const getUserPreferencesByUserId = async (userId) => {
 
   return preferences;
 };
+
+// 내가 진행중인 미션 가져오기
+export const getUserMissionInProgress = async (userId) => {
+  const ongoingMissions = await prisma.mission.findMany ({
+    where: {
+      userId: userId,
+      status: "INPROGRESS"
+    },
+    orderBy: { id: "asc" }
+  });
+    return ongoingMissions;
+};
+
+// 진행 중인 미션을 진행 완료로 변경하기
+export const updateUserMissionToComplete = async (userId, missionId) => {
+  const updated = await prisma.userMission.updateMany({
+    where: {
+      userId: userId,
+      missionId: missionId,
+      status: "INPROGRESS"
+    },
+    data: {
+      status: "COMPLETE"
+    }
+  });
+
+  return updated.missionId;
+};

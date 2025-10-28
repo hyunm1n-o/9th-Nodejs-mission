@@ -1,4 +1,7 @@
 import { responseFromUser } from "../dtos/user.dto.js";
+import { getUserMissionsInProgress, updateUserMissionToComplete } from "../repositories/user.repository.js";
+
+
 import bcrypt from "bcrypt";
 import {
   addUser,
@@ -36,4 +39,17 @@ export const userSignUp = async (data) => {
   const preferences = await getUserPreferencesByUserId(joinUserId);
 
   return responseFromUser({ user, preferences });
+};
+
+export const listUserMissionsInProgress = async (userId) => {
+  const missions = await getUserMissionsInProgress(userId);
+  return missions; 
+};
+
+export const completeUserMission = async (userId, missionId) => {
+  const result = await updateUserMissionToComplete(userId, missionId);
+  if (result === 0) {
+    throw new Error("진행 중인 미션이 없거나 이미 완료된 미션입니다.");
+  }
+  return { message: "미션 완료 처리 완료" };
 };

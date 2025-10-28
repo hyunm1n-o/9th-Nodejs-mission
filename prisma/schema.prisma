@@ -53,3 +53,13 @@ model UserFavorCategory {
   @@index([userId], map: "user_id")
   @@map("user_favor_category")
 }
+
+model Mission {
+  id Int @id @default(autoincrement())
+  storeId Int
+  reward Int
+  deadLine DateTime
+  missionSpec String
+
+  @@map("mission")
+}

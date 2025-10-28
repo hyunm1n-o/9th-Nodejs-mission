@@ -7,3 +7,8 @@ export const responseFromReviews = (reviews) => {
   };
 };
 
+export const responseFromMission = (missions) => {
+  return {
+    data: missions,
+  };
+};

@@ -25,3 +25,4 @@ export const responseFromUser = ({ user, preferences }) => {
     preferCategory: preferFoods,
   };
 };
+

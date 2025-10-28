@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { bodyToUser } from "../dtos/user.dto.js";
-import { userSignUp } from "../services/user.service.js";
+import { userSignUp, completeUserMission } from "../services/user.service.js";
+
 
 // 회원가입 
 export const handleUserSignUp = async (req, res, next) => {
@@ -9,4 +10,19 @@ export const handleUserSignUp = async (req, res, next) => {
 
     const user = await userSignUp(bodyToUser(req.body));
     res.status(StatusCodes.OK).json({ result: user });
+};
+
+export const handleListUserMissionsInProgress = async (req, res, next) => {
+    const userId = parseInt(req.params.userId);
+    const missions = await listUserMissionsInProgress(userId);
+
+    res.status(StatusCodes.OK).json({ result: missions });
+};
+
+export const handleCompleteUserMission = async (req, res, next) => {
+    const userId = parseInt(req.params.userId);
+    const missionId = parseInt(req.params.missionId);
+
+    const result = await completeUserMission(userId, missionId);
+    res.status(StatusCodes.OK).json(result);
 };
