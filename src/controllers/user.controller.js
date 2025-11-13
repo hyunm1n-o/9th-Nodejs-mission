@@ -5,18 +5,20 @@ import { userSignUp, completeUserMission } from "../services/user.service.js";
 
 // 회원가입 
 export const handleUserSignUp = async (req, res, next) => {
-    console.log("회원가입을 요청했습니다!");
-    console.log("body: req.body"); // 값이 잘 들어오나 확인하기 위한 테스트용
+  console.log("회원가입을 요청했습니다!");
+  console.log("body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 
-    const user = await userSignUp(bodyToUser(req.body));
-    res.status(StatusCodes.OK).json({ result: user });
+  const user = await userSignUp(bodyToUser(req.body));
+
+    res.status(StatusCodes.OK).success(user);
+
 };
 
 export const handleListUserMissionsInProgress = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
     const missions = await listUserMissionsInProgress(userId);
 
-    res.status(StatusCodes.OK).json({ result: missions });
+    res.status(StatusCodes.OK).success(missions);
 };
 
 export const handleCompleteUserMission = async (req, res, next) => {
@@ -24,5 +26,5 @@ export const handleCompleteUserMission = async (req, res, next) => {
     const missionId = parseInt(req.params.missionId);
 
     const result = await completeUserMission(userId, missionId);
-    res.status(StatusCodes.OK).json(result);
+    res.status(StatusCodes.OK).success(result);
 };

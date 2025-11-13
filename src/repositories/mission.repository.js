@@ -1,4 +1,4 @@
-
+import { prisma } from "../db.config.js";
 
 // 가게에 미션 추가하기
 export const addMission = async (data) => {

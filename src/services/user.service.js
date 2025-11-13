@@ -1,15 +1,18 @@
 import { responseFromUser } from "../dtos/user.dto.js";
-import { getUserMissionsInProgress, updateUserMissionToComplete } from "../repositories/user.repository.js";
-
-
-import bcrypt from "bcrypt";
 import {
+  DuplicateUserEmailError,
+  MissionNotInProgressError
+} from "../errors.js";
+import { 
+  getUserMissionInProgress,
+  updateUserMissionToComplete,
   addUser,
   getUser,
   getUserPreferencesByUserId,
   setPreference,
 } from "../repositories/user.repository.js";
 
+import bcrypt from "bcrypt";
 // 회원가입
 export const userSignUp = async (data) => {
   // 비밀번호 해싱
@@ -28,7 +31,7 @@ export const userSignUp = async (data) => {
   });
 
   if (joinUserId === null) {
-    throw new Error("이미 존재하는 이메일입니다.");
+    throw new DuplicateUserEmailError("이미 존재하는 이메일입니다.", data);
   }
 
   for (const preference of data.preferences) {
@@ -42,14 +45,17 @@ export const userSignUp = async (data) => {
 };
 
 export const listUserMissionsInProgress = async (userId) => {
-  const missions = await getUserMissionsInProgress(userId);
-  return missions; 
+  const missions = await getUserMissionInProgress(userId);
+  return missions;
 };
 
 export const completeUserMission = async (userId, missionId) => {
   const result = await updateUserMissionToComplete(userId, missionId);
   if (result === 0) {
-    throw new Error("진행 중인 미션이 없거나 이미 완료된 미션입니다.");
+    throw new MissionNotInProgressError(
+      "진행 중인 미션이 없거나 이미 완료된 미션입니다.",
+      { userId, missionId }
+    );
   }
-  return { message: "미션 완료 처리 완료" };
+  return { userId, missionId, status: "COMPLETE" };
 };
