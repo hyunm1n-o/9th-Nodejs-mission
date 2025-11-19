@@ -7,6 +7,8 @@ import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 import cookieParser from 'cookie-parser';
+import swaggerAutogen from "swagger-autogen";
+import swaggerUiExpress from "swagger-ui-express";
 
 import { 
   handleUserSignUp, 
@@ -56,8 +58,42 @@ app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형
 app.use(morgan('dev'));
 app.use(cookieParser()); 
 
+// 스웨거
+app.use(
+  "/docs",
+  swaggerUiExpress.serve,
+  swaggerUiExpress.setup({}, {
+    swaggerOptions: {
+      url: "/openapi.json",
+    },
+  })
+);
+
+app.get("/openapi.json", async (req, res, next) => {
+  // #swagger.ignore = true
+  const options = {
+    openapi: "3.0.0",
+    disableLogs: true,
+    writeOutputFile: false,
+  };
+
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+const outputFile = "/dev/null"; // 파일 출력은 사용하지 않습니다.
+  const routes = ["./src/index.js"];
+  const doc = {
+    info: {
+      title: "UMC 9th",
+      description: "UMC 9th Node.js 테스트 프로젝트입니다.",
+    },
+    host: "localhost:3000",
+  };
+
+  const result = await swaggerAutogen(options)(outputFile, routes, doc);
+  res.json(result ? result.data : null);
 });
 
 /* 로그인 실습 코드 시작 
@@ -116,6 +152,7 @@ app.get('/set-logout', (req, res) => {
 
 /* 로그인 실습 코드 끝 */
 
+/*
 app.get('/test', (req, res) => {
   res.send('Hello!');
 });
@@ -139,6 +176,7 @@ app.get('/getcookie', (req, res) => {
         res.send('쿠키가 없습니다.');
     }
 });
+*/
 
 app.post("/api/v1/users/signup", handleUserSignUp);
 app.post("/api/v1/stores/:storeId/reviews", addReview);
