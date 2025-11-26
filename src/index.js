@@ -9,6 +9,9 @@ import morgan from "morgan";
 import cookieParser from 'cookie-parser';
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
+import passport from "passport";
+import { googleStrategy, jwtStrategy } from "./auth.config.js";
+
 
 import { 
   handleUserSignUp, 
@@ -28,6 +31,9 @@ import {
    } from "./controllers/store.controller.js"
 
 dotenv.config();
+
+passport.use(googleStrategy);
+passport.use(jwtStrategy); 
 
 const app = express();
 const port = process.env.PORT;
@@ -55,6 +61,9 @@ app.use(cors()); // cors 방식 허용
 app.use(express.static("public")); // 정적 파일 접근
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+
+app.use(passport.initialize());
+
 app.use(morgan('dev'));
 app.use(cookieParser()); 
 
@@ -176,6 +185,44 @@ app.get('/getcookie', (req, res) => {
         res.send('쿠키가 없습니다.');
     }
 });
+*/
+
+
+/*
+// 9주차 실습 코드
+const isLogin = passport.authenticate('jwt', { session: false });
+
+app.get('/mypage', isLogin, (req, res) => {
+  res.status(200).success({
+    message: `인증 성공! ${req.user.name}님의 마이페이지입니다.`,
+    user: req.user,
+  });
+});
+
+app.get("/oauth2/login/google", 
+  passport.authenticate("google", { 
+    session: false 
+  })
+);
+app.get(
+  "/oauth2/callback/google",
+  passport.authenticate("google", {
+	  session: false,
+    failureRedirect: "/login-failed",
+  }),
+  (req, res) => {
+    const tokens = req.user; 
+
+    res.status(200).json({
+      resultType: "SUCCESS",
+      error: null,
+      success: {
+          message: "Google 로그인 성공!",
+          tokens: tokens, // { "accessToken": "...", "refreshToken": "..." }
+      }
+    });
+  }
+);
 */
 
 app.post("/api/v1/users/signup", handleUserSignUp);
