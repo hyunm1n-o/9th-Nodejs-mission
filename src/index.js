@@ -188,7 +188,6 @@ app.get('/getcookie', (req, res) => {
 */
 
 
-/*
 // 9주차 실습 코드
 const isLogin = passport.authenticate('jwt', { session: false });
 
@@ -223,16 +222,15 @@ app.get(
     });
   }
 );
-*/
 
 app.post("/api/v1/users/signup", handleUserSignUp);
-app.post("/api/v1/stores/:storeId/reviews", addReview);
-app.post("/api/v1/stores/:storeId/missions", addMission);
-app.post("/api/v1/missions/:missionId/users/:userId", assignUserMission);
+app.post("/api/v1/stores/:storeId/reviews", isLogin, addReview);
+app.post("/api/v1/stores/:storeId/missions", isLogin, addMission);
+app.post("/api/v1/missions/:missionId/users/:userId", isLogin, assignUserMission);
 
-app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);
-app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions)
-app.get("/api/v1/users/:userId/missions/inprogress", handleListUserMissionsInProgress)
+app.get("/api/v1/stores/:storeId/reviews", isLogin, handleListStoreReviews);
+app.get("/api/v1/stores/:storeId/missions", isLogin, handleListStoreMissions)
+app.get("/api/v1/users/:userId/missions/inprogress", isLogin, handleListUserMissionsInProgress)
 
 app.patch("/api/v1/users/:userId/missions/:missionId/complete", handleCompleteUserMission)
 
